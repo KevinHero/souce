@@ -48,65 +48,38 @@ Google近期在Udacity上发布了[Android性能优化的在线课程](https://w
 
 我们可以通过下面的代码来获取手机的当前充电状态：
 
-`// It is very easy to subscribe to changes to the battery state, but you can get the current`
-
-`// state by simply passing null in as your receiver.  Nifty, isn't that?`
-
-`IntentFilter filter = ``new` `IntentFilter(Intent.ACTION_BATTERY_CHANGED);`
-
-`Intent batteryStatus = ``this``.registerReceiver(``null``, filter);`
-
-`int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);`
-
-`boolean acCharge = (chargePlug == BatteryManager.BATTERY_PLUGGED_AC);`
-
-`if` `(acCharge) {`
-
-`Log.v(LOG_TAG,“The phone is charging!”);`
-
-`}`
+// It is very easy to subscribe to changes to the battery state, but you can get the current
+// state by simply passing null in as your receiver.  Nifty, isn't that?
+IntentFilter filter = ``new` `IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+Intent batteryStatus = ``this``.registerReceiver(``null``, filter);
+int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+boolean acCharge = (chargePlug == BatteryManager.BATTERY_PLUGGED_AC);`
+if` `(acCharge) {
+    Log.v(LOG_TAG,“The phone is charging!”);`
+`}
 
 在上面的例子演示了如何立即获取到手机的充电状态，得到充电状态信息之后，我们可以有针对性的对部分代码做优化。比如我们可以判断只有当前手机为AC充电状态时 才去执行一些非常耗电的操作。
 
-`/**`
-
-`* This method checks for power by comparing the current battery state against all possible`
-
-`* plugged in states. In this case, a device may be considered plugged in either by USB, AC, or`
-
-`* wireless charge. (Wireless charge was introduced in API Level 17.)`
-
-`*/`
-
-`private boolean checkForPower() {`
-
-`// It is very easy to subscribe to changes to the battery state, but you can get the current`
-
-`// state by simply passing null in as your receiver.  Nifty, isn't that?`
-
-`IntentFilter filter = ``new` `IntentFilter(Intent.ACTION_BATTERY_CHANGED);`
-
-`Intent batteryStatus = ``this``.registerReceiver(``null``, filter);`
-
-`// There are currently three ways a device can be plugged in. We should check them all.`
-
-`int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);`
-
-`boolean usbCharge = (chargePlug == BatteryManager.BATTERY_PLUGGED_USB);`
-
-`boolean acCharge = (chargePlug == BatteryManager.BATTERY_PLUGGED_AC);`
-
-`boolean wirelessCharge = ``false``;`
-
-`if` `(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {`
-
-`wirelessCharge = (chargePlug == BatteryManager.BATTERY_PLUGGED_WIRELESS);`
-
-`}`
-
-`return` `(usbCharge || acCharge || wirelessCharge);`
-
-`}`
+/**
+* This method checks for power by comparing the current battery state against all possible
+* plugged in states. In this case, a device may be considered plugged in either by USB, AC, or
+* wireless charge. (Wireless charge was introduced in API Level 17.)
+*/
+private boolean checkForPower() {
+// It is very easy to subscribe to changes to the battery state, but you can get the current
+// state by simply passing null in as your receiver.  Nifty, isn't that?
+IntentFilter filter = ``new` `IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+Intent batteryStatus = ``this``.registerReceiver(``null``, filter);
+// There are currently three ways a device can be plugged in. We should check them all.
+int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+boolean usbCharge = (chargePlug == BatteryManager.BATTERY_PLUGGED_USB);
+boolean acCharge = (chargePlug == BatteryManager.BATTERY_PLUGGED_AC);
+boolean wirelessCharge = ``false``;
+if` `(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+wirelessCharge = (chargePlug == BatteryManager.BATTERY_PLUGGED_WIRELESS);
+`}
+return (usbCharge || acCharge || wirelessCharge);
+}
 
 ### 4)Wakelock and Battery Drain
 
